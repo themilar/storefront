@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'store',
     'tags',
     # third party
+    'rest_framework',
     'debug_toolbar',
 ]
 
