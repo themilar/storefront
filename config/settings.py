@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     # local
     'profiles',
     'store',
+    'tags',
     # third party
     'debug_toolbar',
 ]
