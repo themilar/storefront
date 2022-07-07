@@ -1,12 +1,26 @@
 from django.db.models.aggregates import Count
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import status
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
+from rest_framework.mixins import (
+    CreateModelMixin,
+    RetrieveModelMixin,
+    DestroyModelMixin,
+)
 
 from .filters import ProductFilter
-from .serializers import CollectionSerializer, ProductSerialzer, ReviewSerializer
-from .models import Collection, Product, OrderItem, Review
+from .serializers import (
+    AddCartItemSerializer,
+    CartItemSerializer,
+    CartSerializer,
+    CollectionSerializer,
+    ProductSerialzer,
+    ReviewSerializer,
+    UpdateCartItemSerializer,
+)
+from .models import CartItem, Collection, Product, OrderItem, Review, Cart
 from .pagination import DefaultProductPagination
 
 
@@ -51,7 +65,8 @@ class CollectionViewSet(ModelViewSet):
             return Response(
                 {
                     "error": "Collection cannot be deleted because it contains one or more products"
-                }
+                },
+                status=status.HTTP_409_CONFLICT,
             )
         return super().destroy(request, *args, **kwargs)
 
@@ -75,3 +90,30 @@ class ReviewViewSet(ModelViewSet):
                 {"error": "Cannot create a review for a product that doesn't exist"}
             )
         return super().perform_create(request, *args, **kwargs)
+
+
+class CartViewSet(
+    GenericViewSet, CreateModelMixin, RetrieveModelMixin, DestroyModelMixin
+):
+    queryset = Cart.objects.prefetch_related("items__product").all()
+    serializer_class = CartSerializer
+
+
+class CartItemViewSet(ModelViewSet):
+    http_method_names = ["get", "post", "patch", "delete"]
+
+    def get_serializer_class(self):
+        serializer_dict = {
+            "POST": AddCartItemSerializer,
+            "PATCH": UpdateCartItemSerializer,
+            "DEFAULT": CartItemSerializer,
+        }
+        return serializer_dict.get(self.request.method, serializer_dict["DEFAULT"])
+
+    def get_queryset(self):
+        return CartItem.objects.filter(cart_id=self.kwargs["cart_pk"]).select_related(
+            "product"
+        )
+
+    def get_serializer_context(self):
+        return {"cart_id": self.kwargs.get("cart_pk")}
