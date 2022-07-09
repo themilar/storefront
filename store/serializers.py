@@ -1,3 +1,4 @@
+from typing import Dict
 from rest_framework import serializers
 from decimal import Decimal
 from .models import Cart, CartItem, Product, Collection, Review
@@ -27,7 +28,7 @@ class ProductSerialzer(serializers.ModelSerializer):
 
     price_with_tax = serializers.SerializerMethodField("calculate_tax")
 
-    def calculate_tax(self, product: Product) -> int:
+    def calculate_tax(self, product: Product) -> Decimal:
         return product.unit_price * Decimal(1.1)
 
 
@@ -36,7 +37,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = ("id", "date", "name", "body", "date")
 
-    def create(self, validated_data):
+    def create(self, validated_data: Dict):
         product_id = self.context.get("product_id")
         return Review.objects.create(product_id=product_id, **validated_data)
 
@@ -64,7 +65,7 @@ class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)
     total_price = serializers.SerializerMethodField()
 
-    def get_total_price(self, cart):
+    def get_total_price(self, cart: Cart) -> Decimal:
         return sum(item.quantity * item.product.unit_price for item in cart.items.all())
 
     class Meta:
@@ -75,7 +76,7 @@ class CartSerializer(serializers.ModelSerializer):
 class AddCartItemSerializer(serializers.ModelSerializer):
     product_id = serializers.IntegerField()
 
-    def validate_product_id(self, value):
+    def validate_product_id(self, value: int):
         if not Product.objects.filter(pk=value):
             raise serializers.ValidationError("No product with the given ID exists")
         return value
