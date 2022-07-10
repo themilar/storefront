@@ -1,5 +1,6 @@
 from django.core.validators import MinValueValidator
 from django.db import models
+from profiles.models import Customer
 from uuid import uuid4
 
 
@@ -40,32 +41,6 @@ class Product(models.Model):
 
     class Meta:
         ordering = ["title"]
-
-
-class Customer(models.Model):
-    MEMBERSHIP_BRONZE = "B"
-    MEMBERSHIP_SILVER = "S"
-    MEMBERSHIP_GOLD = "G"
-
-    MEMBERSHIP_CHOICES = [
-        (MEMBERSHIP_BRONZE, "Bronze"),
-        (MEMBERSHIP_SILVER, "Silver"),
-        (MEMBERSHIP_GOLD, "Gold"),
-    ]
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
-    phone = models.CharField(max_length=255)
-    birth_date = models.DateField(null=True, blank=True)
-    membership = models.CharField(
-        max_length=1, choices=MEMBERSHIP_CHOICES, default=MEMBERSHIP_BRONZE
-    )
-
-    def __str__(self):
-        return f"{self.first_name} {self.last_name}"
-
-    class Meta:
-        ordering = ["first_name", "last_name"]
 
 
 class Order(models.Model):
