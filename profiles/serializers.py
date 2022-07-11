@@ -1,5 +1,8 @@
 from lib2to3.pytree import Base
-from djoser.serializers import UserCreateSerializer as BaseUserCreateSerializer
+from djoser.serializers import (
+    UserSerializer,
+    UserCreateSerializer as BaseUserCreateSerializer,
+)
 
 
 class UserCreateSerializer(BaseUserCreateSerializer):
@@ -12,3 +15,8 @@ class UserCreateSerializer(BaseUserCreateSerializer):
             "first_name",
             "last_name",
         )
+
+
+class UserDetailSerializer(UserSerializer):
+    class Meta(UserSerializer.Meta):
+        fields = ("id", "email", "username", "first_name", "last_name")

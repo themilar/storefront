@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
+from datetime import timedelta
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -152,7 +153,10 @@ REST_FRAMEWORK = {
         "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
 }
-SIMPLE_JWT = {"AUTH_HEADER_TYPES": ("JWT",)}
+SIMPLE_JWT = {
+    "AUTH_HEADER_TYPES": ("JWT",),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+}
 
 
 SPECTACULAR_SETTINGS = {
@@ -163,4 +167,9 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": True,
 }
 
-DJOSER = {"SERIALIZERS": {"user_create": "profiles.serializers.UserCreateSerializer"}}
+DJOSER = {
+    "SERIALIZERS": {
+        "user_create": "profiles.serializers.UserCreateSerializer",
+        "current_user": "profiles.serializers.UserDetailSerializer",
+    }
+}
