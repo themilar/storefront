@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "tags",
     # third party
     "rest_framework",
+    "djoser",
     "debug_toolbar",
     "drf_spectacular",
     "django_filters",
@@ -147,7 +148,12 @@ INTERNAL_IPS = [
 REST_FRAMEWORK = {
     "COERCE_DECIMAL_TO_STRING": False,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
 }
+SIMPLE_JWT = {"AUTH_HEADER_TYPES": ("JWT",)}
+
 
 SPECTACULAR_SETTINGS = {
     "swagger": "2.0",
@@ -156,3 +162,5 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": True,
 }
+
+DJOSER = {"SERIALIZERS": {"user_create": "profiles.serializers.UserCreateSerializer"}}
