@@ -2,6 +2,7 @@ from typing import Dict
 from decimal import Decimal
 from django.db import transaction
 from rest_framework import serializers
+from .signals import order_created
 from .models import (
     Cart,
     CartItem,
@@ -179,5 +180,5 @@ class CreateOrderSerializer(serializers.Serializer):
             OrderItem.objects.bulk_create(order_items)
 
             Cart.objects.filter(pk=cart_id).delete()
-
+            order_created.send_robust(self.__class__,order=order)
             return order
