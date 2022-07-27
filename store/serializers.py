@@ -7,6 +7,7 @@ from .models import (
     Cart,
     CartItem,
     Customer,
+    Image,
     Order,
     OrderItem,
     Product,
@@ -23,7 +24,17 @@ class CollectionSerializer(serializers.ModelSerializer):
     product_count = serializers.IntegerField(read_only=True)
 
 
+class ImageSerializer(serializers.ModelSerializer):
+    image = serializers.ImageField()
+
+    class Meta:
+        model = Image
+        fields = ("title", "image", "product")
+
+
 class ProductSerialzer(serializers.ModelSerializer):
+    image = ImageSerializer()
+
     class Meta:
         model = Product
         fields = (
@@ -35,6 +46,7 @@ class ProductSerialzer(serializers.ModelSerializer):
             "unit_price",
             "price_with_tax",
             "collection",
+            "image",
         )
 
     price_with_tax = serializers.SerializerMethodField("calculate_tax")
@@ -180,5 +192,5 @@ class CreateOrderSerializer(serializers.Serializer):
             OrderItem.objects.bulk_create(order_items)
 
             Cart.objects.filter(pk=cart_id).delete()
-            order_created.send_robust(self.__class__,order=order)
+            order_created.send_robust(self.__class__, order=order)
             return order

@@ -3,6 +3,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib import admin
 from uuid import uuid4
+from cloudinary.models import CloudinaryField
 
 
 class Promotion(models.Model):
@@ -35,6 +36,7 @@ class Product(models.Model):
     collection = models.ForeignKey(
         Collection, on_delete=models.PROTECT, related_name="products"
     )
+
     promotions = models.ManyToManyField(Promotion, blank=True)
 
     def __str__(self) -> str:
@@ -42,6 +44,23 @@ class Product(models.Model):
 
     class Meta:
         ordering = ["title"]
+
+
+class Image(models.Model):
+    time_created = models.DateTimeField(auto_now_add=True)
+    title = models.CharField("Title (optional)", max_length=200, blank=True)
+
+    ## Points to a Cloudinary image
+    image = CloudinaryField("image")
+    product = models.OneToOneField(Product, on_delete=models.CASCADE)
+
+    def __str__(self):
+        """Informative name for model"""
+        try:
+            public_id = self.image.public_id
+        except AttributeError:
+            public_id = ""
+        return "Photo <%s:%s>" % (self.title, public_id)
 
 
 class Customer(models.Model):
@@ -98,7 +117,7 @@ class Order(models.Model):
 
 
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.PROTECT,related_name='items')
+    order = models.ForeignKey(Order, on_delete=models.PROTECT, related_name="items")
     product = models.ForeignKey(
         Product, on_delete=models.PROTECT, related_name="orderitems"
     )

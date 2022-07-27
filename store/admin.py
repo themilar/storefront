@@ -20,7 +20,9 @@ class InventoryFilter(admin.SimpleListFilter):
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
-    autocomplete_fields = ["collection"]
+    autocomplete_fields = [
+        "collection"
+    ]
     prepopulated_fields = {"slug": ["title"]}
     actions = ["clear_inventory"]
     list_display = ["title", "unit_price", "inventory_status", "collection_title"]
@@ -105,3 +107,9 @@ class OrderAdmin(admin.ModelAdmin):
     autocomplete_fields = ["customer"]
     inlines = [OrderItemInline]
     list_display = ["id", "placed_at", "customer"]
+
+
+@admin.register(models.Image)
+class ImageAdmin(admin.ModelAdmin):
+    autocomplete_fields = ["product"]
+    list_display = ["title", "image", "product"]

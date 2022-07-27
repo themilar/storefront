@@ -5,13 +5,14 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.mixins import (
     CreateModelMixin,
     RetrieveModelMixin,
     DestroyModelMixin,
 )
-
+import cloudinary
 from .perimissions import IsAdminOrReadOnly
 
 from .filters import ProductFilter
@@ -22,6 +23,7 @@ from .serializers import (
     CollectionSerializer,
     CreateOrderSerializer,
     CustomerSerializer,
+    ImageSerializer,
     OrderSerializer,
     ProductSerialzer,
     ReviewSerializer,
@@ -188,3 +190,21 @@ class OrderViewSet(ModelViewSet):
         if self.request.method == "PATCH":
             return UpdateOrderSerializer
         return OrderSerializer
+
+
+class ImageUploadView(APIView):
+    def post(self, request):
+        product_id = request.data.get("product")
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response(
+                "this product does not exist", status=status.HTTP_400_BAD_REQUEST
+            )
+        file = request.data.get("image")
+        serializer = ImageSerializer(product, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        cloudinary.uploader.upload(file)
+        return Response(serializer.data)
