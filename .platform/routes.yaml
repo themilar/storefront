@@ -4,4 +4,4 @@
 
 "https://www.{default}/":
   type: redirect
-  to: "https://{default}/docs"
+  to: "https://{default}/"
