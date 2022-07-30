@@ -1,3 +1,0 @@
-db:
-  type: oracle-mysql:8.0
-  disk: 1024

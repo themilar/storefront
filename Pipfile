@@ -57,8 +57,7 @@ social-auth-app-django = "==4.0.0"
 social-auth-core = "==4.3.0"
 urllib3 = "==1.26.10"
 django-cors-headers = "==3.13.0"
-platformshconfig = "*"
-gunicorn = "*"
+gunicorn = "==20.1.0"
 
 [requires]
 python_version = "3.8"
