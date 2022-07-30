@@ -3,7 +3,7 @@ import django_on_heroku
 
 django_on_heroku.settings(locals())
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS += [
     "agile-fortress-60729.herokuapp.com",

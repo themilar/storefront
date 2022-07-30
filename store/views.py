@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.generics import GenericAPIView
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from rest_framework.mixins import (
     CreateModelMixin,
@@ -192,19 +192,22 @@ class OrderViewSet(ModelViewSet):
         return OrderSerializer
 
 
-class ImageUploadView(APIView):
+class ImageUploadView(CreateModelMixin, GenericAPIView):
+
+    serializer_class = ImageSerializer
+
     def post(self, request):
-        product_id = request.data.get("product")
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
-            return Response(
-                "this product does not exist", status=status.HTTP_400_BAD_REQUEST
-            )
-        file = request.data.get("image")
-        serializer = ImageSerializer(product, data=request.data)
+        # product_id = request.data.get("product")
+        # try:
+        #     product = Product.objects.get(id=product_id)
+        # except Product.DoesNotExist:
+        #     return Response(
+        #         "this product does not exist", status=status.HTTP_400_BAD_REQUEST
+        #     )
+        image = request.data.get("image")
+        serializer = ImageSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
 
-        cloudinary.uploader.upload(file)
+        cloudinary.uploader.upload(image)
         return Response(serializer.data)
