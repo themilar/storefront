@@ -22,7 +22,7 @@ from drf_spectacular.views import (
 )
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("notadmin/", admin.site.urls),
     path("__debug__/", include("debug_toolbar.urls")),
     path("store/", include("store.urls")),
     path("auth/", include("djoser.urls")),
